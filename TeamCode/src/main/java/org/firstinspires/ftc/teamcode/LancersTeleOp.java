@@ -3,46 +3,48 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
+import com.qualcomm.robotcore.util.Range;
 
-@TeleOp
-public final class LancersTeleOp extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.LancersBotConfig;
 
-    private void mecanumMovement(final Gamepad gamepad) {
-        final double counteractValue = 1.05; // Value to counteract imperfect strafing
-        //Declaration of motors
-        final DcMotor frontLeftMotor = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
-        final DcMotor rearLeftMotor = hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
-        final DcMotor frontRightMotor = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
-        final DcMotor rearRightMotor = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
-
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        final double ly = -gamepad.left_stick_y; // Y stick values are reversed
-        final double lx = gamepad.left_stick_x * counteractValue; // Counteract imperfect strafing
-        final double rx = gamepad1.right_stick_x;
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // Ensures all power maintain the same ratio, but only when
-        // at least one is out of range [-1, 1]
-        final double denominator = Math.max(1, Math.abs(ly) + Math.abs(lx) + Math.abs(rx));
-        final double frontLeftPower = (ly + lx + rx) / denominator;
-        final double frontRightPower = (ly - lx - rx);
-        final double rearLeftPower = (ly - lx + rx);
-        final double rearRightPower = (ly + lx - rx);
-
-        frontLeftMotor.setPower(frontLeftPower);
-        rearLeftMotor.setPower(rearLeftPower);
-        frontRightMotor.setPower(frontRightPower);
-        rearRightMotor.setPower(rearRightPower);
-    }
+@TeleOp()
+public class LancersTeleOp extends LinearOpMode {
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() throws InterruptedException  {
         waitForStart();
+
         if (isStopRequested()) return;
-        while(opModeIsActive()) {
-            mecanumMovement(gamepad1);
+
+        while (opModeIsActive()) {
+            final double speedMultiplier = (gamepad1.a ? 1.0d : 0.8d)/1.5;
+
+            final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
+            final DcMotor leftRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
+            final DcMotor rightFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
+            final DcMotor rightRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
+
+            // Gamepad positions; Motors are swapped
+            final double ly = -gamepad1.left_stick_y * speedMultiplier; // Remember, Y stick value is reversed
+            final double lx = -gamepad1.left_stick_x * speedMultiplier; // Counteract imperfect strafing
+            final double rx = gamepad1.right_stick_x * speedMultiplier;
+
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            final double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
+
+            final double frontLeftPower = (ly + lx + rx) / denominator;
+            final double backLeftPower = (ly - lx + rx) / denominator;
+            final double frontRightPower = (ly - lx - rx) / denominator;
+            final double backRightPower = (ly + lx - rx) / denominator;
+
+            leftFront.setPower(-frontLeftPower);
+            leftRear.setPower(-backLeftPower);
+            rightFront.setPower(frontRightPower);
+            rightRear.setPower(backRightPower);
+
         }
     }
 }
