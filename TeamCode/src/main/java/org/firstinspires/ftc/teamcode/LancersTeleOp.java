@@ -17,7 +17,7 @@ public class LancersTeleOp extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            final double speedMultiplier = (gamepad1.a ? 1.0d : 0.8d)/1.5;
+            final double speedMultiplier = (gamepad1.a ? 1.0d : 0.8d);
 
             final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
             final DcMotor leftRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
