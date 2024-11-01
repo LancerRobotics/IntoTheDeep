@@ -26,6 +26,7 @@ public class LancersTeleOp extends LinearOpMode {
     public long currentRunTimeStamp = -1;
     public long timeStampAtLastOpModeRun = -1;
 
+
     @Override
     public void runOpMode() throws InterruptedException  {
         waitForStart();
@@ -113,7 +114,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             // arm rotation motor
             double rotateTrigger = respectDeadZones(gamepad2.right_stick_y);
-            final double  rotateMultiplier = 1.3;
+            final double  rotateMultiplier = 0.5;
 
             // do same integral work
             final double rotationEncoderReading = rotationMotor.getVelocity(AngleUnit.RADIANS);
