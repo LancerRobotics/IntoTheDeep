@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp()
@@ -15,11 +13,16 @@ public class LancersTeleOp extends LinearOpMode {
     public double trackedRotationRadians = 0.0d;
 
     // do not make final in order to edit from dashboard
-    public static double MINIMUM_EXTENSION_RADIANS = 0.0d;
+    public static double MINIMUM_EXTENSION_RADIANS = -Double.MAX_VALUE;
     public static double MAXIMUM_EXTENSION_RADIANS = Double.MAX_VALUE;
     public static double MINIMUM_ROTATION_RADIANS = 0.0d;
     public static double MAXIMUM_ROTATION_RADIANS = Double.MAX_VALUE;
 
+    public static double ROTATE_MULTIPLIER = 1;
+
+    public static double OPEN_SERVO_POSITION = 0.15;
+    public static double CLOSE_SERVO_POSITION = 0.515;
+    
     public long currentRunTimeStamp = -1;
     public long timeStampAtLastOpModeRun = -1;
 
@@ -55,15 +58,27 @@ public class LancersTeleOp extends LinearOpMode {
             final double rx = respectDeadZones(gamepad1.right_stick_x) * speedMultiplier;
 
             double currentServoPosition = hookServo.getPosition();
-            double openServoPosition = 0.15;
-            double closeServoPosition = 0.515;
             final double servoSpeed = 0.01;
 
-            hookServo.scaleRange(openServoPosition, closeServoPosition);
-            if ((gamepad2.a) && currentServoPosition < closeServoPosition) {
+            hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION);
+            if ((gamepad2.a) && currentServoPosition < CLOSE_SERVO_POSITION) {
                 currentServoPosition += servoSpeed;
-            } else if ((gamepad2.b) && currentServoPosition > openServoPosition) {
+            } else if ((gamepad2.b) && currentServoPosition > OPEN_SERVO_POSITION) {
                 currentServoPosition -= servoSpeed;
+            }
+
+            if (gamepad2.x) {
+                while (currentServoPosition > OPEN_SERVO_POSITION) {
+                    currentServoPosition -= servoSpeed;
+                    if (currentServoPosition <= OPEN_SERVO_POSITION) break;
+                }
+            }
+
+            if (gamepad2.y) {
+                while (currentServoPosition < CLOSE_SERVO_POSITION) {
+                    currentServoPosition += servoSpeed;
+                    if (currentServoPosition >= CLOSE_SERVO_POSITION) break;
+                }
             }
 
             hookServo.setPosition(currentServoPosition);
@@ -102,6 +117,14 @@ public class LancersTeleOp extends LinearOpMode {
                 trackedExtensionRadians += (clockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp);
             }
 
+            if (trackedExtensionRadians < MINIMUM_EXTENSION_RADIANS) {
+                // abort rotation
+                carbonFiberPower = 0.1d;
+            } else if (trackedExtensionRadians > MAXIMUM_EXTENSION_RADIANS) {
+                // abort rotation
+                carbonFiberPower = -0.1d;
+            }
+
             telemetry.addData("trackedExtensionRadians", trackedExtensionRadians);
 
             // as carbon fiber extends, clockwise +power and counterclockwise -power
@@ -110,8 +133,7 @@ public class LancersTeleOp extends LinearOpMode {
             counterclockwiseMotor.setPower(carbonFiberPower);
 
             // arm rotation motor
-            double rotateTrigger = respectDeadZones(gamepad2.right_stick_y);
-            final double  rotateMultiplier = 0.5;
+            double rotateTrigger = respectDeadZones(gamepad2.right_stick_y) * ROTATE_MULTIPLIER;
 
             // do same integral work
             final double rotationEncoderReading = rotationMotor.getVelocity(AngleUnit.RADIANS);
@@ -120,12 +142,17 @@ public class LancersTeleOp extends LinearOpMode {
                 trackedRotationRadians += (rotationEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp);
             }
 
+            if (trackedRotationRadians < MINIMUM_ROTATION_RADIANS) {
+                // abort rotation
+                rotateTrigger = 0.1d;
+            } else if (trackedRotationRadians > MAXIMUM_ROTATION_RADIANS) {
+                // abort rotation
+                rotateTrigger = -0.1d;
+            }
+
             telemetry.addData("trackedRotationRadians", trackedRotationRadians);
 
             rotationMotor.setPower(rotateTrigger);
-
-            // TODO: implement limits and velocity limits as we reach limit (adjust carbonFiberPower)
-            // TODO: implement trig to make sure that the length never exceeds the limit
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;
