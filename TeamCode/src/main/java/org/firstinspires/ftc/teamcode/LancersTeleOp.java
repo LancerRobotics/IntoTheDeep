@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp()
+@Config
 public class LancersTeleOp extends LinearOpMode {
     public static final String TAG = "LancerTeleOp";
 
@@ -19,13 +21,13 @@ public class LancersTeleOp extends LinearOpMode {
     public static double MAXIMUM_ROTATION_RADIANS = Double.MAX_VALUE;
 
     public static double ROTATE_MULTIPLIER = 1;
+    public static double CLAW_SERVO_SPEED = 0.4;
 
     public static double OPEN_SERVO_POSITION = 0.15;
     public static double CLOSE_SERVO_POSITION = 0.515;
     
     public long currentRunTimeStamp = -1;
     public long timeStampAtLastOpModeRun = -1;
-
 
     @Override
     public void runOpMode() throws InterruptedException  {
@@ -48,7 +50,7 @@ public class LancersTeleOp extends LinearOpMode {
             final DcMotorEx rotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.ROTATION_MOTOR);
 
             final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
-
+            hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
 
             final double speedMultiplier = (gamepad1.a ? 1.0d : 0.8d)/1.5;
 
@@ -57,34 +59,24 @@ public class LancersTeleOp extends LinearOpMode {
             final double lx = -respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
             final double rx = respectDeadZones(gamepad1.right_stick_x) * speedMultiplier;
 
-            double currentServoPosition = hookServo.getPosition();
-            final double servoSpeed = 0.01;
-
-            hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION);
-            if ((gamepad2.a) && currentServoPosition < CLOSE_SERVO_POSITION) {
-                currentServoPosition += servoSpeed;
-            } else if ((gamepad2.b) && currentServoPosition > OPEN_SERVO_POSITION) {
-                currentServoPosition -= servoSpeed;
+            // slow claw movement
+            final double currentServoPosition = hookServo.getPosition();
+            if (gamepad2.a) {
+                // positive movement
+                hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED, 1.0d));
+            } else if (gamepad2.b) {
+                // negative movement
+                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED, 0.0d));
+            } else if (gamepad2.x) {
+                // snap to open
+                hookServo.setPosition(OPEN_SERVO_POSITION);
+            } else if (gamepad2.y) {
+                // snap to close
+                hookServo.setPosition(CLOSE_SERVO_POSITION);
             }
 
-            if (gamepad2.x) {
-                while (currentServoPosition > OPEN_SERVO_POSITION) {
-                    currentServoPosition -= servoSpeed;
-                    if (currentServoPosition <= OPEN_SERVO_POSITION) break;
-                }
-            }
-
-            if (gamepad2.y) {
-                while (currentServoPosition < CLOSE_SERVO_POSITION) {
-                    currentServoPosition += servoSpeed;
-                    if (currentServoPosition >= CLOSE_SERVO_POSITION) break;
-                }
-            }
-
-            hookServo.setPosition(currentServoPosition);
-            //currentServoPosition = Range.clip(currentServoPosition, openServoPosition, closeServoPosition);
-            telemetry.addData("Servo Position: ", currentServoPosition);
-
+            //currentServoPositimaven { url = 'https://maven.brott.dev/' }on = Range.clip(currentServoPosition, openServoPosition, closeServoPosition);
+            telemetry.addData("currentServoPosition", currentServoPosition);
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
@@ -119,10 +111,10 @@ public class LancersTeleOp extends LinearOpMode {
 
             if (trackedExtensionRadians < MINIMUM_EXTENSION_RADIANS) {
                 // abort rotation
-                carbonFiberPower = 0.1d;
+                carbonFiberPower = Math.min(0.5d, carbonFiberPower);
             } else if (trackedExtensionRadians > MAXIMUM_EXTENSION_RADIANS) {
                 // abort rotation
-                carbonFiberPower = -0.1d;
+                carbonFiberPower = Math.max(-0.5d, carbonFiberPower);
             }
 
             telemetry.addData("trackedExtensionRadians", trackedExtensionRadians);
@@ -144,10 +136,10 @@ public class LancersTeleOp extends LinearOpMode {
 
             if (trackedRotationRadians < MINIMUM_ROTATION_RADIANS) {
                 // abort rotation
-                rotateTrigger = 0.1d;
+                rotateTrigger = Math.min(0.5d, rotateTrigger);
             } else if (trackedRotationRadians > MAXIMUM_ROTATION_RADIANS) {
                 // abort rotation
-                rotateTrigger = -0.1d;
+                rotateTrigger = Math.max(-0.5d, rotateTrigger);
             }
 
             telemetry.addData("trackedRotationRadians", trackedRotationRadians);
