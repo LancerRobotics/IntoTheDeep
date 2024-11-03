@@ -17,14 +17,14 @@ public class LancersTeleOp extends LinearOpMode {
     // do not make final in order to edit from dashboard
     public static double MINIMUM_EXTENSION_RADIANS = -Double.MAX_VALUE;
     public static double MAXIMUM_EXTENSION_RADIANS = Double.MAX_VALUE;
-    public static double MINIMUM_ROTATION_RADIANS = 0.0d;
+    public static double MINIMUM_ROTATION_RADIANS = -Double.MAX_VALUE;
     public static double MAXIMUM_ROTATION_RADIANS = Double.MAX_VALUE;
 
     public static double ROTATE_MULTIPLIER = 1;
     public static double CLAW_SERVO_SPEED = 0.4;
 
     public static double OPEN_SERVO_POSITION = 0.15;
-    public static double CLOSE_SERVO_POSITION = 0.515;
+    public static double CLOSE_SERVO_POSITION = 0.55;
     
     public long currentRunTimeStamp = -1;
     public long timeStampAtLastOpModeRun = -1;
