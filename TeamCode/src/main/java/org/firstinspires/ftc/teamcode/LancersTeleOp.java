@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.dashboard.config.Config;
-//TEMPORARY FOR COMP
+//TEMPORARY FOR COMP, add @Config to LancersTeleOp class later
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp()
-@Config
 public class LancersTeleOp extends LinearOpMode {
     public static final String TAG = "LancerTeleOp";
 
