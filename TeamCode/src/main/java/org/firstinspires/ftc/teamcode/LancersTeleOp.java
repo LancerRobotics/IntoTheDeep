@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.config.Config;
+//import com.acmerobotics.dashboard.config.Config;
+//TEMPORARY FOR COMP
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
@@ -48,6 +49,7 @@ public class LancersTeleOp extends LinearOpMode {
             final DcMotorEx counterclockwiseMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.COUNTERCLOCKWISE_EXPAND_MOTOR);
 
             final DcMotorEx rotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.ROTATION_MOTOR);
+            final DcMotorEx counterRotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.COUNTER_ROTATION_MOTOR);
 
             final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
             hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
@@ -145,6 +147,7 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addData("trackedRotationRadians", trackedRotationRadians);
 
             rotationMotor.setPower(rotateTrigger);
+            counterRotationMotor.setPower(-rotateTrigger);
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;

@@ -11,5 +11,6 @@ public final class LancersBotConfig {
     public final static String CLOCKWISE_EXPAND_MOTOR = "clockwiseExpand";
     public final static String COUNTERCLOCKWISE_EXPAND_MOTOR = "counterclockwiseExpand";
     public final static String ROTATION_MOTOR = "rotationMotor";
+    public final static String COUNTER_ROTATION_MOTOR = "counterRotationMotor";
 
 }
