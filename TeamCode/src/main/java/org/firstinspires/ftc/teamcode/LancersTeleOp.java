@@ -31,7 +31,7 @@ public class LancersTeleOp extends LinearOpMode {
         return Range.scale(trackedRotationRadians, MINIMUM_ROTATION_RADIANS, MAXIMUM_ROTATION_RADIANS, DEGREES_FROM_BASELINE_AT_MINIMUM, DEGREES_FROM_BASELINE_AT_MAXIMUM);
     }
 
-    public static double ROTATE_MAX_SPEED_MULTIPLIER = 1;
+    public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.5;
     public static double CLAW_SERVO_SPEED = 0.4;
 
     public static double OPEN_SERVO_POSITION = 0.15;
