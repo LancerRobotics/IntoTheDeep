@@ -57,6 +57,8 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double CALIBRATION_Y_TRAVELLED_INCHES = -103.25d; // did this backwards
     public static double CALIBRATION_Y_MEASURED_INCHES = -102.891d;
 
+    // TODO: ADJUST CALIBRATIONS (alan)
+
     public static double X_MULTIPLIER = CALIBRATION_X_TRAVELLED_INCHES / CALIBRATION_X_MEASURED_INCHES;
     public static double Y_MULTIPLIER = CALIBRATION_Y_TRAVELLED_INCHES / CALIBRATION_Y_MEASURED_INCHES;
 
