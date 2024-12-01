@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import org.firstinspires.ftc.teamcode.drive.opmode.StraightTest;
 
 /*
  * Constants shared between multiple drive types.
@@ -44,7 +45,9 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.8898; // in
-    public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
+
+    public static double NORM_GEAR_RATIO = 1;
+    public static double GEAR_RATIO = NORM_GEAR_RATIO; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 16; // in // real: //TEMPORARY
 
     /*
@@ -54,8 +57,8 @@ public class DriveConstants {
      * empirically tuned.
      */
     public static double kV = 1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0;
-    public static double kStatic = 0;
+    public static double kA = 0.0047;
+    public static double kStatic = 0.0515;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,

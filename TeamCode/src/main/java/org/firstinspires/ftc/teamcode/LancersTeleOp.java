@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 @TeleOp()
 @Config
@@ -40,6 +41,8 @@ public class LancersTeleOp extends LinearOpMode {
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
 
+    private Encoder parallelEncoder, perpendicularEncoder;
+
     @Override
     public void runOpMode() throws InterruptedException  {
         // init work (reset)
@@ -68,6 +71,9 @@ public class LancersTeleOp extends LinearOpMode {
         final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
         hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
 
+        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
+        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
+
         // go!!
         waitForStart();
 
@@ -78,10 +84,10 @@ public class LancersTeleOp extends LinearOpMode {
 
             // slow claw movement
             final double currentServoPosition = hookServo.getPosition();
-            if (gamepad2.left_trigger > 0) {
+            if (gamepad2.right_trigger > 0) {
                 // positive movement
                 hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
-            } else if (gamepad2.right_trigger > 0) {
+            } else if (gamepad2.left_trigger > 0) {
                 // negative movement
                 hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d));
             } else if (gamepad2.left_bumper) {
@@ -136,6 +142,9 @@ public class LancersTeleOp extends LinearOpMode {
             }
             final double relativeRotation = getArmDeviationFromBaselineDegrees();
 
+            parallelEncoder.setDirection(Encoder.Direction.REVERSE);
+            perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
+
             telemetry.addData("trackedRotationRadians", trackedRotationRadians);
             telemetry.addData("relativeRotation", relativeRotation);
 
@@ -178,6 +187,10 @@ public class LancersTeleOp extends LinearOpMode {
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;
+
+            telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
+            telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
+
             telemetry.update();
         }
     }

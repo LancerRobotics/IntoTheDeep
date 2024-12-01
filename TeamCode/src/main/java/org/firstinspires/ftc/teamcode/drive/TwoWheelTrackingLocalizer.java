@@ -51,11 +51,11 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     // Added https://learnroadrunner.com/dead-wheels.html#adjusting-the-wheel-radius
 
     // NOTE: only one trial was done for each of these, so it is theoretically possible that the multipliers are off
-    public static double CALIBRATION_X_TRAVELLED_INCHES = 104.5d;
-    public static double CALIBRATION_X_MEASURED_INCHES = 104.027d; // dont take more than 3 decimal places, unreliable
+    public static double CALIBRATION_Y_TRAVELLED_INCHES = 119;
+    public static double CALIBRATION_Y_MEASURED_INCHES = 120.856; // dont take more than 3 decimal places, unreliable
 
-    public static double CALIBRATION_Y_TRAVELLED_INCHES = -103.25d; // did this backwards
-    public static double CALIBRATION_Y_MEASURED_INCHES = -102.891d;
+    public static double CALIBRATION_X_TRAVELLED_INCHES = 141; // did this backwards
+    public static double CALIBRATION_X_MEASURED_INCHES = 140.53;
 
     // TODO: ADJUST CALIBRATIONS (alan)
 
