@@ -118,10 +118,10 @@ public class LancersTeleOp extends LinearOpMode {
             final double frontRightPower = (ly - lx - rx) / denominator;
             final double backRightPower = (ly + lx - rx) / denominator;
 
-            leftFront.setPower(-frontLeftPower);
-            leftRear.setPower(-backLeftPower);
-            rightFront.setPower(frontRightPower);
-            rightRear.setPower(backRightPower);
+            leftFront.setPower(-frontLeftPower*0.9);
+            leftRear.setPower(-backLeftPower*0.9);
+            rightFront.setPower(frontRightPower*0.9);
+            rightRear.setPower(backRightPower*0.9);
 
             // arm rotation motor
             double rotateTrigger = respectDeadZones(gamepad2.right_stick_y) * ROTATE_MAX_SPEED_MULTIPLIER;
