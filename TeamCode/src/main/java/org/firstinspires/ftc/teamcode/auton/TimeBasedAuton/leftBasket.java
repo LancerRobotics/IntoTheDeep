@@ -26,8 +26,17 @@ public class leftBasket extends LinearOpMode {
         if (opModeIsActive()){
 
             robot.forward();
-
             robot.pause();
+            robot.slidesMovement(true);
+            robot.pause();
+            robot.clawOpen(); // by this point, the block should be in the low basket
+            robot.pause();
+            robot.backward();
+            robot.pause();
+            robot.slidesMovement(false);
+            robot.pause();
+            robot.backward();
+            robot.pause(); // should be parked by now
 
         }
     }

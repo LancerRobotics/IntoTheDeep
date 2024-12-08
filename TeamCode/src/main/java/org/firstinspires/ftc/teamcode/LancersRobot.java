@@ -137,5 +137,18 @@ public class LancersRobot {
         leftRear.setPower(-0.5);
     }
 
+    // functions below are for the slides and the claw
+
+    public void slidesMovement(boolean isGoingUp){
+        slidesMotor.setPower(isGoingUp ? 1 : -1); // Will need to adjust this over time
+    }
+    public void clawOpen(){
+        hookServo.setPosition(LancersTeleOp.OPEN_SERVO_POSITION);
+    }
+    public void clawClose(){
+        hookServo.setPosition(LancersTeleOp.CLOSE_SERVO_POSITION);
+    }
+    // TODO: FIX SERVO POSITION VARIABLE DECLARATIONS TO
+    //  BE INSIDE THE LANCERS ROBOT CLASS
 
 }
