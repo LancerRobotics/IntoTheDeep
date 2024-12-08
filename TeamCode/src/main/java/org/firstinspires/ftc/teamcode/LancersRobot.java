@@ -3,26 +3,38 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 
 
 public class LancersRobot {
     private final HardwareMap hardwareMap;
+    public DcMotor leftFront;
+    public DcMotor leftRear;
+    public DcMotor rightFront;
+    public DcMotor rightRear;
+
+    public DcMotor slidesMotor;
+    public Servo hookServo;
+
+    private LinearOpMode linearOpMode;
+
+
     public LancersRobot (final HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
+        configureMotors(hardwareMap);
     }
 
-    public static void configureMotors(final @NotNull HardwareMap hardwareMap) {
-        final @NotNull DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
-        final @NotNull DcMotor leftRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
-        final @NotNull DcMotor rightFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
-        final @NotNull DcMotor rightRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
+    public void configureMotors(final @NotNull HardwareMap hardwareMap) {
+        leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
+        leftRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
+        rightFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
+        rightRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
+
+
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
@@ -68,6 +80,61 @@ public class LancersRobot {
     public void setServoPosition(double currentServoPosition) {
         final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
         hookServo.setPosition(currentServoPosition);
+    }
+
+    // All of the functions below are used for wheel movement in time-based autons
+
+    public void pause(int sleepTime){
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+        leftRear.setPower(0);
+
+        linearOpMode.sleep(sleepTime);
+    }
+    public void pause(){
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+        leftRear.setPower(0);
+
+        linearOpMode.sleep(1300);
+    }
+    public void forward(){
+        leftFront.setPower(0.5);
+        rightFront.setPower(0.5);
+        rightRear.setPower(0.5);
+        leftRear.setPower(0.5);
+    }
+    public void backward() {
+        leftFront.setPower(-0.5);
+        rightFront.setPower(-0.5);
+        rightRear.setPower(-0.5);
+        leftRear.setPower(-0.5);
+    }
+    public void turnLeft() {
+        leftFront.setPower(-0.5);
+        rightFront.setPower(0.5);
+        rightRear.setPower(0.5);
+        leftRear.setPower(-0.5);
+    }
+    public void turnRight() {
+        leftFront.setPower(0.5);
+        rightFront.setPower(-0.5);
+        rightRear.setPower(-0.5);
+        leftRear.setPower(0.5);
+    }
+    public void strafeLeft(){ // EXPERIMENTAL DUE TO WEIGHT ISSUES
+        leftFront.setPower(-0.5);
+        rightFront.setPower(0.5);
+        rightRear.setPower(-0.5);
+        leftRear.setPower(0.5);
+    }
+    public void strafeRight() { // EXPERIMENTAL DUE TO WEIGHT ISSUES
+        leftFront.setPower(0.5);
+        rightFront.setPower(-0.5);
+        rightRear.setPower(0.5);
+        leftRear.setPower(-0.5);
     }
 
 

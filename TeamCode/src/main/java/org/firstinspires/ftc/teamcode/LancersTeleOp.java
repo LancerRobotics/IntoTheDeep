@@ -62,15 +62,7 @@ public class LancersTeleOp extends LinearOpMode {
         final DcMotor rightRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        final DcMotorEx clockwiseMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.CLOCKWISE_EXPAND_MOTOR);
-        clockwiseMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        final DcMotorEx counterclockwiseMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.COUNTERCLOCKWISE_EXPAND_MOTOR);
-        counterclockwiseMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        final DcMotorEx rotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.ROTATION_MOTOR);
-        rotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        final DcMotorEx counterRotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.COUNTER_ROTATION_MOTOR);
-        counterRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        final DcMotor slidesMotor = hardwareMap.dcMotor.get(LancersBotConfig.SLIDES_MOTOR);
 
         final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
         hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
@@ -88,12 +80,12 @@ public class LancersTeleOp extends LinearOpMode {
 
             // slow claw movement
             final double currentServoPosition = hookServo.getPosition();
-            if (gamepad2.right_trigger > 0) {
+            if (gamepad2.left_stick_x > 0) {
                 // positive movement
-                hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
-            } else if (gamepad2.left_trigger > 0) {
+                hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_stick_x/10), 1.0d));
+            } else if (gamepad2.left_stick_x < 0) {
                 // negative movement
-                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d));
+                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(-gamepad2.left_stick_x/10), 0.0d));
             } else if (gamepad2.left_bumper) {
                 // snap to open
                 hookServo.setPosition(OPEN_SERVO_POSITION);
@@ -112,6 +104,9 @@ public class LancersTeleOp extends LinearOpMode {
             final double lx = -respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
             final double rx = respectDeadZones(gamepad1.right_stick_x) * speedMultiplier;
 
+            final double slidesPositive = gamepad2.left_trigger;
+            final double slidesNegative = gamepad2.right_trigger;
+
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
             // but only if at least one is out of the range [-1, 1]
@@ -122,75 +117,23 @@ public class LancersTeleOp extends LinearOpMode {
             final double frontRightPower = (ly - lx - rx) / denominator;
             final double backRightPower = (ly + lx - rx) / denominator;
 
+            double slidesPower = 0.0d;
+            final float TRIGGER_THRESHOLD = 0.15f;
+
+            if (slidesPositive > TRIGGER_THRESHOLD){
+                slidesPower = (slidesPositive - TRIGGER_THRESHOLD) * (1f / (1f - TRIGGER_THRESHOLD));
+            }
+            if (slidesNegative > TRIGGER_THRESHOLD){
+                slidesPower =  -(slidesNegative - TRIGGER_THRESHOLD) * (1f / (1f - TRIGGER_THRESHOLD));
+            }
+
+
             leftFront.setPower(-frontLeftPower*0.9);
             leftRear.setPower(-backLeftPower*0.9);
             rightFront.setPower(frontRightPower*0.9);
             rightRear.setPower(backRightPower*0.9);
 
-            // arm rotation motor
-            double rotateTrigger = respectDeadZones(gamepad2.right_stick_y) * ROTATE_MAX_SPEED_MULTIPLIER;
-
-            // do same integral work
-            final double rotationEncoderReading = rotationMotor.getVelocity(AngleUnit.RADIANS);
-            if (timeStampAtLastOpModeRun != -1d) {
-                // component of discrete integral
-                trackedRotationRadians += (rotationEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
-            }
-
-            if (trackedRotationRadians < MINIMUM_ROTATION_RADIANS) {
-                // abort rotation
-                rotateTrigger = Math.min(0.5d, rotateTrigger);
-            } else if (trackedRotationRadians > MAXIMUM_ROTATION_RADIANS) {
-                // abort rotation
-                rotateTrigger = Math.max(-0.5d, rotateTrigger);
-            }
-            final double relativeRotation = getArmDeviationFromBaselineDegrees();
-
-            parallelEncoder.setDirection(Encoder.Direction.REVERSE);
-            perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
-
-            telemetry.addData("trackedRotationRadians", trackedRotationRadians);
-            telemetry.addData("relativeRotation", relativeRotation);
-
-            rotationMotor.setPower(rotateTrigger);
-            counterRotationMotor.setPower(rotateTrigger);
-
-            // arm extension motor(s)
-            // after movement: handle expansion/retraction of boat hook arm
-            final double expandShrinkJoystick = respectDeadZones(gamepad2.left_stick_y);
-
-            // positive: expand, negative: contract
-            double carbonFiberPower = Range.clip(expandShrinkJoystick, -1, 1);
-
-            // before setting the power, find area under the curve and analyze if a subsequent run would set our value to 0
-            // extension encoder is attached to the CW motor
-            // CW: expansion
-            // CCW: extraction
-            final double clockwiseEncoderReading = clockwiseMotor.getVelocity(AngleUnit.RADIANS);
-            if (timeStampAtLastOpModeRun != -1d) {
-                trackedExtensionRadians += (clockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
-            }
-
-            final boolean armTooLongToBeLegal = trackedExtensionRadians < LAWFUL_MINIMUM_EXTENSION_RADIANS;
-            final boolean armTooLongMechanically = trackedExtensionRadians < MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS;
-
-            // over minimum: over max extension, pull in by setting a minimum value
-            if (armTooLongToBeLegal || armTooLongMechanically) {
-                // abort rotation; pull in until we are within bounds
-                carbonFiberPower = -0.3;
-            }
-
-            telemetry.addData("armTooLongToBeLegal", armTooLongToBeLegal);
-            telemetry.addData("armTooLongMechanically", armTooLongMechanically);
-            telemetry.addData("trackedExtensionRadians", trackedExtensionRadians);
-
-            // as carbon fiber extends, clockwise +power and counterclockwise -power
-            // as carbon fiber extends, clockwise -power and counterclockwise +power
-            clockwiseMotor.setPower(-carbonFiberPower);
-            counterclockwiseMotor.setPower(carbonFiberPower);
-
-            // we finished an iteration, record the time the last value was recorded for use in finding sum
-            timeStampAtLastOpModeRun = currentRunTimeStamp;
+            slidesMotor.setPower(slidesPower);
 
             telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
             telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
