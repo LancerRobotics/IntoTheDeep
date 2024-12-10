@@ -116,13 +116,13 @@ public class LancersRobot {
         }
     }
     public void forward(double power){
-        long start = System.nanoTime();
-        while (System.nanoTime() - start < 15E8) { // 2 seconds
+        //long start = System.nanoTime();
+        //while (System.nanoTime() - start < 15E8) { // 2 seconds
             leftFront.setPower(power);
             rightFront.setPower(power);
             rightRear.setPower(power);
             leftRear.setPower(power);
-        }
+        //}
     }
     public void backward() {
         long start = System.nanoTime();
