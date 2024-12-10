@@ -39,8 +39,8 @@ public class LancersTeleOp extends LinearOpMode {
     public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.5;
     public static double CLAW_SERVO_SPEED = 0.4;
 
-    public static double OPEN_SERVO_POSITION = 0.15;
-    public static double CLOSE_SERVO_POSITION = 0.55; // Value at comp was 0.55, adjust later
+    public static double OPEN_SERVO_POSITION = 0.05;
+    public static double CLOSE_SERVO_POSITION = 0.50; // Value at comp was 0.55, adjust later
     
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
@@ -80,13 +80,13 @@ public class LancersTeleOp extends LinearOpMode {
 
             // slow claw movement
             final double currentServoPosition = hookServo.getPosition();
-            if (gamepad2.left_stick_x > 0) {
+            /**if (gamepad2.left_stick_x > 0) {
                 // positive movement
                 hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_stick_x/10), 1.0d));
             } else if (gamepad2.left_stick_x < 0) {
                 // negative movement
-                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(-gamepad2.left_stick_x/10), 0.0d));
-            } else if (gamepad2.left_bumper) {
+                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(-gamepad2.left_stick_x/10), 0.0d));}*/
+            if (gamepad2.left_bumper) {
                 // snap to open
                 hookServo.setPosition(OPEN_SERVO_POSITION);
             } else if (gamepad2.right_bumper) {
@@ -119,6 +119,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             double slidesPower = 0.0d;
             final float TRIGGER_THRESHOLD = 0.15f;
+            final double slidesMultiplier = 1;
 
             if (slidesPositive > TRIGGER_THRESHOLD){
                 slidesPower = (slidesPositive - TRIGGER_THRESHOLD) * (1f / (1f - TRIGGER_THRESHOLD));
@@ -126,6 +127,7 @@ public class LancersTeleOp extends LinearOpMode {
             if (slidesNegative > TRIGGER_THRESHOLD){
                 slidesPower =  -(slidesNegative - TRIGGER_THRESHOLD) * (1f / (1f - TRIGGER_THRESHOLD));
             }
+            slidesPower *= slidesMultiplier;
 
 
             leftFront.setPower(-frontLeftPower*0.9);

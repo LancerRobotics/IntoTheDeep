@@ -15,9 +15,14 @@ public class rightBasket extends LinearOpMode {
 
     LancersRobot robot;
 
+    public rightBasket(){
+
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
-        final LancersRobot robot = new LancersRobot(hardwareMap);
+        robot = new LancersRobot(hardwareMap);
+
         waitForStart();
 
         telemetry.addData("Status", "Its working :)");
@@ -25,20 +30,18 @@ public class rightBasket extends LinearOpMode {
 
         if (opModeIsActive()){
 
-            robot.forward();
-            robot.forward();
-            robot.pause();
+            robot.forward(0.6);
+            robot.pauseMotors();
+            sleep(200);
             robot.slidesMovement(true);
-            robot.pause();
+            robot.pauseMotors();
+            sleep(200);
             robot.clawOpen(); // by this point, the block should be in the low basket
-            robot.pause();
-            robot.backward();
-            robot.pause();
+            robot.pauseMotors();
+            sleep(400);
             robot.slidesMovement(false);
-            robot.pause();
-            robot.backward();
-            robot.pause(); // should be parked by now
-
+            robot.pauseMotors();
+            sleep(300);
         }
     }
 }

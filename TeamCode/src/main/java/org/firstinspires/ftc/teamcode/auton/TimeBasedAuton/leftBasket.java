@@ -15,9 +15,13 @@ public class leftBasket extends LinearOpMode {
 
     LancersRobot robot;
 
+    public leftBasket(){
+
+    }
     @Override
     public void runOpMode() throws InterruptedException {
-        final LancersRobot robot = new LancersRobot(hardwareMap);
+        robot = new LancersRobot(hardwareMap);
+
         waitForStart();
 
         telemetry.addData("Status", "Its working :)");
@@ -25,18 +29,24 @@ public class leftBasket extends LinearOpMode {
 
         if (opModeIsActive()){
 
-            robot.forward();
-            robot.pause();
+            robot.strafeRight(0.5); // This is only working due to the weight imbalance
+            sleep(150);
+            robot.pauseMotors();
             robot.slidesMovement(true);
-            robot.pause();
+            sleep(5000);
+            robot.pauseMotors();
             robot.clawOpen(); // by this point, the block should be in the low basket
-            robot.pause();
-            robot.backward();
-            robot.pause();
+            robot.pauseMotors();
+            sleep(600);
             robot.slidesMovement(false);
-            robot.pause();
+            robot.pauseMotors();
+            sleep(200);
             robot.backward();
-            robot.pause(); // should be parked by now
+            robot.pauseMotors();
+            sleep(200);
+            robot.backward();
+            robot.pauseMotors(); // should be parked by now
+            sleep(200);
 
         }
     }

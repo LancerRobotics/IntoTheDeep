@@ -15,19 +15,23 @@ public class rightPark extends LinearOpMode {
 
     LancersRobot robot;
 
+    public rightPark(){
+
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
-        final LancersRobot robot = new LancersRobot(hardwareMap);
+        robot = new LancersRobot(hardwareMap);
+
         waitForStart();
 
         telemetry.addData("Status", "Its working :)");
         telemetry.update();
 
         if (opModeIsActive()){
-
-            robot.forward();
-
-            robot.pause();
+            robot.forward(0.5); //immediately goes to the corner to park
+            sleep(300);
+            robot.pauseMotors();
 
         }
     }

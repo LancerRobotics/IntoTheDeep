@@ -6,34 +6,35 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.LancersRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-
-@Autonomous(name="leftPark", group="TimeBasedAutons")
+@Autonomous(name="slidesTesting", group="TimeBasedAutons")
 @Config
-public class leftPark extends LinearOpMode {
-    // purpose: If the robot is on the left side of the field, it will park the robot
-    // BOT SHOULD BE FACED TOWARDS THE PARKING SPOT
+public class slidesTesting extends LinearOpMode {
+    // THIS IS FOR TESTING SLIDES ONLY
 
-    LancersRobot robot;
+    private LancersRobot robot = null;
 
-    public leftPark(){
-
+    public slidesTesting(){
     }
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new LancersRobot(hardwareMap);
+        int power = 1;
 
         waitForStart();
 
         telemetry.addData("Status", "Its working :)");
+        telemetry.addData("Slides power", power);
         telemetry.update();
 
         if (opModeIsActive()){
-            sleep(20000); // Waits 20 seconds
-            robot.forward(0.5);
-            sleep(850);
+            robot.slidesMovement(true, power);
             robot.pauseMotors();
-
+            sleep(1000);
+            robot.slidesMovement(false, power);
+            robot.pauseMotors();
         }
+
+
     }
 }
