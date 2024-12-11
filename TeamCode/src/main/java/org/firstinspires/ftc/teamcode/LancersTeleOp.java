@@ -167,6 +167,13 @@ public class LancersTeleOp extends LinearOpMode {
             // CW: expansion
             // CCW: extraction
             final double clockwiseEncoderReading = clockwiseMotor.getVelocity(AngleUnit.RADIANS);
+            final double counterclockwiseEncoderReading = counterclockwiseMotor.getVelocity(AngleUnit.RADIANS);
+
+            boolean isTogether = true;
+            if (Math.abs(clockwiseEncoderReading-counterclockwiseEncoderReading) > 10) {
+                isTogether = false;
+            }
+
             if (timeStampAtLastOpModeRun != -1d) {
                 trackedExtensionRadians += (clockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
             }
@@ -183,6 +190,10 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addData("armTooLongToBeLegal", armTooLongToBeLegal);
             telemetry.addData("armTooLongMechanically", armTooLongMechanically);
             telemetry.addData("trackedExtensionRadians", trackedExtensionRadians);
+
+            telemetry.addData("Clockwise Reading", clockwiseEncoderReading);
+            telemetry.addData("Counterclockwise Reading", -counterclockwiseEncoderReading);
+            telemetry.addData("Extension Motors are Together", isTogether);
 
             // as carbon fiber extends, clockwise +power and counterclockwise -power
             // as carbon fiber extends, clockwise -power and counterclockwise +power
