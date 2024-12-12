@@ -16,8 +16,6 @@ import org.firstinspires.ftc.teamcode.LancersBaseOpMode;
 @Config
 public class LancersTeleOp extends LinearOpMode {
     public static final String TAG = "LancerTeleOp";
-
-
     private double trackedExtensionRadians = 0.0d; // units : radians/sec * sec
     private double trackedRotationRadians = 0.0d;
 
@@ -64,13 +62,15 @@ public class LancersTeleOp extends LinearOpMode {
 
         final DcMotor slidesMotor = hardwareMap.dcMotor.get(LancersBotConfig.SLIDES_MOTOR);
 
+        final Servo slidesServo1 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO1);
+        final Servo slidesServo2 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO2);
+
         final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
         hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
 
         parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
         perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
 
-        // go!!
         waitForStart();
 
         if (isStopRequested()) return;
