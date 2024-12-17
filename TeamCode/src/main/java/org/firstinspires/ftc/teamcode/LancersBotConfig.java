@@ -9,6 +9,8 @@ public final class LancersBotConfig {
     public static final String REAR_RIGHT_MOTOR = "rearRightMotor";
     public final static String HOOK_SERVO = "hookServo";
     public final static String SLIDES_MOTOR = "slidesMotor";
+
+    // EDIT LATER #sliderotateservo
     public final static String SLIDES_SERVO1 = "slideServo1";
     public final static String SLIDES_SERVO2 = "slideServo2";
 }

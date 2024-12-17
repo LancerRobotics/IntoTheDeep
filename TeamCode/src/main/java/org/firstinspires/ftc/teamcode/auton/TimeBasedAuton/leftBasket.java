@@ -29,24 +29,26 @@ public class leftBasket extends LinearOpMode {
 
         if (opModeIsActive()){
 
-            robot.strafeRight(0.5); // This is only working due to the weight imbalance
-            sleep(150);
+            robot.forward(0.5); // This is only working due to the weight imbalance
+            sleep(100);
             robot.pauseMotors();
-            robot.slidesMovement(true);
-            sleep(5000);
+            robot.turnRight(0.5);
+            sleep(100);
+            robot.slidesMovement(true,0.4);
+            sleep(2000);
             robot.pauseMotors();
             robot.clawOpen(); // by this point, the block should be in the low basket
             robot.pauseMotors();
             sleep(600);
-            robot.slidesMovement(false);
-            robot.pauseMotors();
-            sleep(200);
+            robot.slidesMovement(false,0.2);
+            sleep(1000);
+            /**robot.pauseMotors();
             robot.backward();
             robot.pauseMotors();
             sleep(200);
             robot.backward();
             robot.pauseMotors(); // should be parked by now
-            sleep(200);
+            sleep(200);*/
 
         }
     }

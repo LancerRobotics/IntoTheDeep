@@ -20,6 +20,11 @@ public class LancersRobot {
     public DcMotor slidesMotor;
     public Servo hookServo;
 
+    public Servo slideServo1;
+    public Servo slideServo2;
+
+
+
     private LinearOpMode linearOpMode;
 
 
@@ -33,6 +38,10 @@ public class LancersRobot {
 
         slidesMotor = hardwareMap.dcMotor.get(LancersBotConfig.SLIDES_MOTOR);
         hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
+
+        // EDIT LATER #sliderotateservo
+        //slideServo1 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO1);
+        //slideServo2 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO2);
 
 
         configureMotors(hardwareMap);
@@ -89,16 +98,12 @@ public class LancersRobot {
         hookServo.setPosition(currentServoPosition);
     }
 
+    public void rotateSlides(int mode){
+
+    }
+
     // All of the functions below are used for wheel movement in time-based autons
 
-    public void pauseMotors(int sleepTime){
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        rightRear.setPower(0);
-        leftRear.setPower(0);
-
-        linearOpMode.sleep(sleepTime);
-    }
     public void pauseMotors(){
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -191,6 +196,13 @@ public class LancersRobot {
         leftRear.setPower(-power);
     }
 
+    public void uplift(double power){
+        //long start = System.nanoTime();
+        //while (System.nanoTime() - start < 15E8) { // 2 seconds
+        slidesMotor.setPower(-0.1);
+        //}
+    }
+
     // functions below are for the slides and the claw
 
     public void slidesMovement(boolean isGoingUp){
@@ -206,17 +218,17 @@ public class LancersRobot {
             //}
         }
     }
-    public void slidesMovement(boolean isGoingUp, int power){
+    public void slidesMovement(boolean isGoingUp, double power){
         long start = System.nanoTime();
         if (isGoingUp){
-            while (System.nanoTime() - start < 5E9){ // 5 seconds
+            //while (System.nanoTime() - start < 5E9){ // 5 seconds
                 slidesMotor.setPower(-power); // Will need to adjust this over time
-            }
+            //}
         }
         else {
-            while (System.nanoTime() - start < 45E8){ // 5 seconds
+            //while (System.nanoTime() - start < 45E8){ // 5 seconds
                 slidesMotor.setPower(power); // Will need to adjust this over time
-            }
+            //}
         }
     }
     public void clawOpen(){

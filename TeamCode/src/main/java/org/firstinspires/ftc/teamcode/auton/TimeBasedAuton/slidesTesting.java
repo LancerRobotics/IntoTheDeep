@@ -19,7 +19,7 @@ public class slidesTesting extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new LancersRobot(hardwareMap);
-        int power = 1;
+        double power = 0.4;
 
         waitForStart();
 
@@ -28,10 +28,12 @@ public class slidesTesting extends LinearOpMode {
         telemetry.update();
 
         if (opModeIsActive()){
-            robot.slidesMovement(true, power);
+            robot.slidesMovement(true, 0.4);
+            sleep(2000);
             robot.pauseMotors();
+            power = 0.2;
+            robot.slidesMovement(false, 0.2);
             sleep(1000);
-            robot.slidesMovement(false, power);
             robot.pauseMotors();
         }
 

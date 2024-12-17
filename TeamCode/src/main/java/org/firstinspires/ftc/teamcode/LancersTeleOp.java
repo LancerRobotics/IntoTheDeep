@@ -6,11 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.Encoder;
-
-import org.firstinspires.ftc.teamcode.LancersRobot;
-import org.firstinspires.ftc.teamcode.LancersBaseOpMode;
 
 @TeleOp()
 @Config
@@ -36,10 +32,19 @@ public class LancersTeleOp extends LinearOpMode {
 
     public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.5;
     public static double CLAW_SERVO_SPEED = 0.4;
+    public static double ROTATE_SERVO_SPEED = 1;
 
     public static double OPEN_SERVO_POSITION = 0.05;
     public static double CLOSE_SERVO_POSITION = 0.50; // Value at comp was 0.55, adjust later
-    
+
+    public static double ROTATE_UP_SERVO_POSITION = 0.73;
+    public static double ROTATE_DOWN_SERVO_POSITION = 1;
+
+    public final double slidesMultiplier = 1;
+
+    public static double upliftSlidesPower = -0.1;
+    public static boolean upliftMode = false;
+
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
 
@@ -62,11 +67,20 @@ public class LancersTeleOp extends LinearOpMode {
 
         final DcMotor slidesMotor = hardwareMap.dcMotor.get(LancersBotConfig.SLIDES_MOTOR);
 
-        final Servo slidesServo1 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO1);
-        final Servo slidesServo2 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO2);
+        // EDIT LATER #sliderotateservo
+        //final Servo slidesServo1 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO1);
+        //final Servo slidesServo2 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO2);
 
         final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
         hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
+
+        final Servo slideServo1 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO1);
+        slideServo1.scaleRange(ROTATE_UP_SERVO_POSITION, ROTATE_DOWN_SERVO_POSITION); // also scales getPosition
+        final Servo slideServo2 = hardwareMap.servo.get(LancersBotConfig.SLIDES_SERVO2);
+        slideServo2.scaleRange(ROTATE_UP_SERVO_POSITION, ROTATE_DOWN_SERVO_POSITION); // also scales getPosition
+
+        slideServo1.setDirection(Servo.Direction.REVERSE);
+        slideServo2.setDirection(Servo.Direction.REVERSE);
 
         parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
         perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
@@ -80,12 +94,6 @@ public class LancersTeleOp extends LinearOpMode {
 
             // slow claw movement
             final double currentServoPosition = hookServo.getPosition();
-            /**if (gamepad2.left_stick_x > 0) {
-                // positive movement
-                hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_stick_x/10), 1.0d));
-            } else if (gamepad2.left_stick_x < 0) {
-                // negative movement
-                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(-gamepad2.left_stick_x/10), 0.0d));}*/
             if (gamepad2.left_bumper) {
                 // snap to open
                 hookServo.setPosition(OPEN_SERVO_POSITION);
@@ -93,6 +101,40 @@ public class LancersTeleOp extends LinearOpMode {
                 // snap to close
                 hookServo.setPosition(CLOSE_SERVO_POSITION);
             }
+
+            final double current1RotateServoPosition = slideServo1.getPosition();
+            final double current2RotateServoPosition = slideServo2.getPosition();
+
+            if (gamepad2.a){
+                upliftMode = !upliftMode;
+            }
+            if (upliftMode && (gamepad1.left_trigger == 0 && gamepad2.right_trigger == 0)){
+                slidesMotor.setPower(upliftSlidesPower);
+            }
+
+            if (gamepad2.left_stick_y > 0) {
+                // positive movement
+
+                slideServo1.setPosition(Math.max(current1RotateServoPosition + ROTATE_SERVO_SPEED * (gamepad2.left_stick_y/10), 1.0d));
+                slideServo2.setPosition(Math.max(current2RotateServoPosition + ROTATE_SERVO_SPEED * (gamepad2.left_stick_y/10), 1.0d));
+            } else if (gamepad2.left_stick_y < 0) {
+                // negative movement
+                slideServo1.setPosition(Math.max(current1RotateServoPosition - ROTATE_SERVO_SPEED * (gamepad2.left_stick_y /10), 1.0d));
+                slideServo2.setPosition(Math.max(current2RotateServoPosition - ROTATE_SERVO_SPEED * (gamepad2.left_stick_y /10), 1.0d));
+            }
+
+            if (gamepad2.x) {
+                // snap to open
+                slideServo1.setPosition(ROTATE_UP_SERVO_POSITION);
+                slideServo2.setPosition(ROTATE_UP_SERVO_POSITION);
+            } else if (gamepad2.y) {
+                // snap to close
+                slideServo1.setPosition(ROTATE_DOWN_SERVO_POSITION);
+                slideServo2.setPosition(ROTATE_DOWN_SERVO_POSITION);
+            }
+
+            telemetry.addData("servo 1", current1RotateServoPosition);
+            telemetry.addData("servo 2", current2RotateServoPosition);
 
             telemetry.addData("currentServoPosition", currentServoPosition);
 
@@ -119,7 +161,6 @@ public class LancersTeleOp extends LinearOpMode {
 
             double slidesPower = 0.0d;
             final float TRIGGER_THRESHOLD = 0.15f;
-            final double slidesMultiplier = 1;
 
             if (slidesPositive > TRIGGER_THRESHOLD){
                 slidesPower = (slidesPositive - TRIGGER_THRESHOLD) * (1f / (1f - TRIGGER_THRESHOLD));
