@@ -40,8 +40,7 @@ public class LancersTeleOp extends LinearOpMode {
     public static double ROTATE_UP_SERVO_POSITION = 0.73;
     public static double ROTATE_DOWN_SERVO_POSITION = 1;
 
-    public final double slidesMultiplier = 1;
-
+    public final double slidesMultiplier = -1;
     public static double upliftSlidesPower = -0.1;
     public static boolean upliftMode = false;
 
