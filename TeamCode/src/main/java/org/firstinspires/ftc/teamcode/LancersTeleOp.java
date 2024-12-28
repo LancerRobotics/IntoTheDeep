@@ -37,8 +37,8 @@ public class LancersTeleOp extends LinearOpMode {
     public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.4;
     public static double CLAW_SERVO_SPEED = 0.4;
 
-    public static double OPEN_SERVO_POSITION = 0.05;
-    public static double CLOSE_SERVO_POSITION = 0.50; // Value at comp was 0.55, adjust later
+    public static double OPEN_SERVO_POSITION = 0;
+    public static double CLOSE_SERVO_POSITION = 1; // Value at comp was 0.55, adjust later
     
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
