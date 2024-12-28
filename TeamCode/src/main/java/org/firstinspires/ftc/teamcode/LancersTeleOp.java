@@ -9,9 +9,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
-import org.firstinspires.ftc.teamcode.LancersRobot;
-import org.firstinspires.ftc.teamcode.LancersBaseOpMode;
-
 @TeleOp()
 @Config
 public class LancersTeleOp extends LinearOpMode {
@@ -22,8 +19,9 @@ public class LancersTeleOp extends LinearOpMode {
     private double trackedRotationRadians = 0.0d;
 
     // do not make final in order to edit from dashboard
-    public static double LAWFUL_MINIMUM_EXTENSION_RADIANS = -1.8d; // negative: expansion // 42 inch limit at base
-    public static double MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS = -2.3d;
+    public static double LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.375; // negative: expansion // 42 inch limit at base
+    public static double MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS = 10;
+    // TODO: Find Mechanical Limit
 
     public static double DEGREES_FROM_BASELINE_AT_MINIMUM = -180.0d;
     public static double DEGREES_FROM_BASELINE_AT_MAXIMUM = 180.0d;
@@ -36,11 +34,11 @@ public class LancersTeleOp extends LinearOpMode {
         return Range.scale(trackedRotationRadians, MINIMUM_ROTATION_RADIANS, MAXIMUM_ROTATION_RADIANS, DEGREES_FROM_BASELINE_AT_MINIMUM, DEGREES_FROM_BASELINE_AT_MAXIMUM);
     }
 
-    public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.5;
+    public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.4;
     public static double CLAW_SERVO_SPEED = 0.4;
 
-    public static double OPEN_SERVO_POSITION = 0.15;
-    public static double CLOSE_SERVO_POSITION = 0.55; // Value at comp was 0.55, adjust later
+    public static double OPEN_SERVO_POSITION = 0.05;
+    public static double CLOSE_SERVO_POSITION = 0.50; // Value at comp was 0.55, adjust later
     
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
@@ -55,7 +53,7 @@ public class LancersTeleOp extends LinearOpMode {
 
         final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        final DcMotor leftRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
+        final DcMotorEx leftRear = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
         leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
         final DcMotor rightFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_RIGHT_MOTOR);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -153,7 +151,7 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addData("relativeRotation", relativeRotation);
 
             rotationMotor.setPower(rotateTrigger);
-            counterRotationMotor.setPower(rotateTrigger);
+            counterRotationMotor.setPower(-rotateTrigger);
 
             // arm extension motor(s)
             // after movement: handle expansion/retraction of boat hook arm
@@ -167,7 +165,7 @@ public class LancersTeleOp extends LinearOpMode {
             // CW: expansion
             // CCW: extraction
             final double clockwiseEncoderReading = clockwiseMotor.getVelocity(AngleUnit.RADIANS);
-            final double counterclockwiseEncoderReading = counterclockwiseMotor.getVelocity(AngleUnit.RADIANS);
+            final double counterclockwiseEncoderReading = leftRear.getVelocity(AngleUnit.RADIANS);
 
             boolean isTogether = true;
             if (Math.abs(clockwiseEncoderReading-counterclockwiseEncoderReading) > 10) {
@@ -175,16 +173,16 @@ public class LancersTeleOp extends LinearOpMode {
             }
 
             if (timeStampAtLastOpModeRun != -1d) {
-                trackedExtensionRadians += (clockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
+                trackedExtensionRadians += (counterclockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
             }
 
-            final boolean armTooLongToBeLegal = trackedExtensionRadians < LAWFUL_MINIMUM_EXTENSION_RADIANS;
-            final boolean armTooLongMechanically = trackedExtensionRadians < MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS;
+            final boolean armTooLongToBeLegal = trackedExtensionRadians > LAWFUL_MINIMUM_EXTENSION_RADIANS;
+            final boolean armTooLongMechanically = trackedExtensionRadians > MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS;
 
             // over minimum: over max extension, pull in by setting a minimum value
             if (armTooLongToBeLegal || armTooLongMechanically) {
                 // abort rotation; pull in until we are within bounds
-                carbonFiberPower = -0.3;
+                carbonFiberPower = -0.8;
             }
 
             telemetry.addData("armTooLongToBeLegal", armTooLongToBeLegal);
@@ -197,7 +195,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             // as carbon fiber extends, clockwise +power and counterclockwise -power
             // as carbon fiber extends, clockwise -power and counterclockwise +power
-            clockwiseMotor.setPower(-carbonFiberPower);
+            clockwiseMotor.setPower(carbonFiberPower);
             counterclockwiseMotor.setPower(carbonFiberPower);
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TimeBasedAuton;
+/*package org.firstinspires.ftc.teamcode.TimeBasedAuton;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -11,4 +11,4 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Config
 public class blueLeft extends LinearOpMode {
     Lancers
-}
+}*/

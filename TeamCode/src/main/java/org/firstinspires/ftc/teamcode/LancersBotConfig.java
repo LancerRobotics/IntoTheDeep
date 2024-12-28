@@ -13,4 +13,5 @@ public final class LancersBotConfig {
     public final static String ROTATION_MOTOR = "rotationMotor";
     public final static String COUNTER_ROTATION_MOTOR = "counterRotationMotor";
 
+    public final static String EXTENSION_ENCODER = "expansionEncoder";
 }
