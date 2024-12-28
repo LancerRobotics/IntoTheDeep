@@ -86,13 +86,13 @@ public class LancersTeleOp extends LinearOpMode {
 
             // slow claw movement
             final double currentServoPosition = hookServo.getPosition();
-            if (gamepad2.right_trigger > 0) {
+            //if (gamepad2.right_trigger > 0) {
                 // positive movement
-                hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
-            } else if (gamepad2.left_trigger > 0) {
+                //hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
+            //} else if (gamepad2.left_trigger > 0) {
                 // negative movement
-                hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d));
-            } else if (gamepad2.left_bumper) {
+                //hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d))}
+            if (gamepad2.left_bumper) {
                 // snap to open
                 hookServo.setPosition(OPEN_SERVO_POSITION);
             } else if (gamepad2.right_bumper) {
