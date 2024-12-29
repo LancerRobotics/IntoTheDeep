@@ -19,6 +19,7 @@ public class LancersTeleOp extends LinearOpMode {
     private double trackedRotationRadians = 0.0d;
 
     // do not make final in order to edit from dashboard
+    public final static double LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS = 1.375;
     public static double LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.375; // negative: expansion // 42 inch limit at base
     public static double MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS = 10;
     // TODO: Find Mechanical Limit
@@ -130,6 +131,10 @@ public class LancersTeleOp extends LinearOpMode {
 
             // do same integral work
             final double rotationEncoderReading = rotationMotor.getVelocity(AngleUnit.RADIANS);
+
+            // sets a new extension limit based on the current angle of rotation and horizontal limit
+            setExtensionLimit();
+
             if (timeStampAtLastOpModeRun != -1d) {
                 // component of discrete integral
                 trackedRotationRadians += (rotationEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
@@ -209,6 +214,15 @@ public class LancersTeleOp extends LinearOpMode {
     }
 
     public static final double DEAD_ZONE_LIMIT = 0.15d;
+
+    public void setExtensionLimit(){
+        double radians = Math.toRadians(trackedRotationRadians);
+        double cosValue = Math.cos(radians);
+        double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
+
+        LAWFUL_MINIMUM_EXTENSION_RADIANS = armLimit;
+    }
+
 
     /**
      * Stick return is unreliable near inside, toss signals that are less than a threshold to maintain stationary behaviour when sticks may or may not be being minimally actuated by using this method to wrap a double value.
