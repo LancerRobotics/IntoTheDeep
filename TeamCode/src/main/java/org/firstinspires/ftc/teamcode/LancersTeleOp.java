@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 public class LancersTeleOp extends LinearOpMode {
     public static final String TAG = "LancerTeleOp";
 
-
     private double trackedExtensionRadians = 0.0d; // units : radians/sec * sec
     private double trackedRotationRadians = 0.0d;
 
@@ -52,6 +51,7 @@ public class LancersTeleOp extends LinearOpMode {
         trackedExtensionRadians = 0.0d;
         trackedRotationRadians = 0.0d;
 
+        // Get from hardwaremap, initialize variables as DcMotor type
         final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         final DcMotorEx leftRear = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.REAR_LEFT_MOTOR);
@@ -60,6 +60,10 @@ public class LancersTeleOp extends LinearOpMode {
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         final DcMotor rightRear = hardwareMap.dcMotor.get(LancersBotConfig.REAR_RIGHT_MOTOR);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        //DcMotorEx inherits from DcMotor class,
+        //DcMotorEx used in pretty much the same way as DcMotor
+        //I honestly don't really know the difference, but DcMotorEx seems to have more functionality
 
         final DcMotorEx clockwiseMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.CLOCKWISE_EXPAND_MOTOR);
         clockwiseMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -74,6 +78,8 @@ public class LancersTeleOp extends LinearOpMode {
         final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
         hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
 
+        //Declaring odometry pods/dead wheels/encoders/whatever you want to call it
+        //Pulling from hardware map again
         parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
         perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
 
@@ -87,6 +93,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             // slow claw movement
             final double currentServoPosition = hookServo.getPosition();
+            //Do not use the commented code below, they don't work
             //if (gamepad2.right_trigger > 0) {
                 // positive movement
                 //hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
@@ -102,6 +109,7 @@ public class LancersTeleOp extends LinearOpMode {
             }
 
             telemetry.addData("currentServoPosition", currentServoPosition);
+            //display on driver hub
 
             // movement
             final double speedMultiplier = gamepad1.a ? 1.0d : 0.8d;
@@ -116,11 +124,16 @@ public class LancersTeleOp extends LinearOpMode {
             // but only if at least one is out of the range [-1, 1]
             final double denominator = Math.max(Math.abs(ly) + Math.abs(lx) + Math.abs(rx), 1);
 
+            //Calculations, more in depth here:
+            //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+
             final double frontLeftPower = (ly + lx + rx) / denominator;
             final double backLeftPower = (ly - lx + rx) / denominator;
             final double frontRightPower = (ly - lx - rx) / denominator;
             final double backRightPower = (ly + lx - rx) / denominator;
 
+            //Speed multipliers by .9, reduces speed of motor
+            //Motors get very funky when running at maximum capacity, cap their speed
             leftFront.setPower(-frontLeftPower*0.9);
             leftRear.setPower(-backLeftPower*0.9);
             rightFront.setPower(frontRightPower*0.9);
