@@ -19,7 +19,7 @@ public class LancersTeleOp extends LinearOpMode {
 
     // do not make final in order to edit from dashboard
     public final static double LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS = 1.375;
-    public static double LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.375; // negative: expansion // 42 inch limit at base
+    public static double LAWFUL_MINIMUM_EXTENSION_RADIANS = 0; // negative: expansion // 42 inch limit at base
     public static double MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS = 10;
     // TODO: Find Mechanical Limit
 
@@ -49,7 +49,7 @@ public class LancersTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException  {
         // init work (reset)
         trackedExtensionRadians = 0.0d;
-        trackedRotationRadians = 0.0d;
+        trackedRotationRadians = 2.26893;
 
         // Get from hardwaremap, initialize variables as DcMotor type
         final DcMotor leftFront = hardwareMap.dcMotor.get(LancersBotConfig.FRONT_LEFT_MOTOR);
@@ -143,14 +143,16 @@ public class LancersTeleOp extends LinearOpMode {
             double rotateTrigger = respectDeadZones(gamepad2.right_stick_y) * ROTATE_MAX_SPEED_MULTIPLIER;
 
             // do same integral work
-            final double rotationEncoderReading = rotationMotor.getVelocity(AngleUnit.RADIANS);
+            double rotationEncoderReading = rotationMotor.getVelocity(AngleUnit.RADIANS);
 
             // sets a new extension limit based on the current angle of rotation and horizontal limit
             setExtensionLimit();
 
-            if (timeStampAtLastOpModeRun != -1d) {
+            final double angleRatioMultiplier = 1.3;
+
+            if ((timeStampAtLastOpModeRun != -1d) && (respectDeadZones(gamepad2.right_stick_y) != 0)) {
                 // component of discrete integral
-                trackedRotationRadians += (rotationEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
+                trackedRotationRadians += (-rotationEncoderReading) * (angleRatioMultiplier) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
             }
 
             if (trackedRotationRadians < MINIMUM_ROTATION_RADIANS) {
@@ -165,7 +167,10 @@ public class LancersTeleOp extends LinearOpMode {
             parallelEncoder.setDirection(Encoder.Direction.REVERSE);
             perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
 
+            double degrees = (trackedRotationRadians * (180/Math.PI))%360;
+
             telemetry.addData("trackedRotationRadians", trackedRotationRadians);
+            telemetry.addData("rotation (degrees)", degrees);
             telemetry.addData("relativeRotation", relativeRotation);
 
             rotationMotor.setPower(rotateTrigger);
@@ -190,7 +195,8 @@ public class LancersTeleOp extends LinearOpMode {
                 isTogether = false;
             }
 
-            if (timeStampAtLastOpModeRun != -1d) {
+
+            if ((timeStampAtLastOpModeRun != -1d) && ((respectDeadZones(gamepad2.left_stick_y) != 0) && (respectDeadZones(gamepad2.right_stick_y) == 0))) {
                 trackedExtensionRadians += (counterclockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
             }
 
@@ -206,9 +212,9 @@ public class LancersTeleOp extends LinearOpMode {
             telemetry.addData("armTooLongToBeLegal", armTooLongToBeLegal);
             telemetry.addData("armTooLongMechanically", armTooLongMechanically);
             telemetry.addData("trackedExtensionRadians", trackedExtensionRadians);
+            telemetry.addData("Current Extension Limit", LAWFUL_MINIMUM_EXTENSION_RADIANS);
 
             telemetry.addData("Clockwise Reading", clockwiseEncoderReading);
-            telemetry.addData("Counterclockwise Reading", -counterclockwiseEncoderReading);
             telemetry.addData("Extension Motors are Together", isTogether);
 
             // as carbon fiber extends, clockwise +power and counterclockwise -power
@@ -226,16 +232,15 @@ public class LancersTeleOp extends LinearOpMode {
         }
     }
 
-    public static final double DEAD_ZONE_LIMIT = 0.15d;
-
     public void setExtensionLimit(){
-        double radians = Math.toRadians(trackedRotationRadians);
+        double radians = trackedRotationRadians;
         double cosValue = Math.cos(radians);
         double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
 
-        LAWFUL_MINIMUM_EXTENSION_RADIANS = armLimit;
+        LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
     }
 
+    public static final double DEAD_ZONE_LIMIT = 0.15d;
 
     /**
      * Stick return is unreliable near inside, toss signals that are less than a threshold to maintain stationary behaviour when sticks may or may not be being minimally actuated by using this method to wrap a double value.
