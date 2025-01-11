@@ -33,13 +33,11 @@ public class rightBasket extends LinearOpMode {
             robot.forward(0.6);
             sleep(200);
             robot.pauseMotors();
-            robot.slidesMovement(true);
             sleep(200);
             robot.pauseMotors();
             robot.clawOpen(); // by this point, the block should be in the low basket
             sleep(400);
             robot.pauseMotors();
-            robot.slidesMovement(false);
             sleep(300);
             robot.pauseMotors();
         }

@@ -28,7 +28,6 @@ public class basketPractice extends LinearOpMode {
         telemetry.update();
 
         if (opModeIsActive()){
-            robot.slidesMovement(true, power);
             robot.pauseMotors();
             sleep(300);
             robot.clawOpen();

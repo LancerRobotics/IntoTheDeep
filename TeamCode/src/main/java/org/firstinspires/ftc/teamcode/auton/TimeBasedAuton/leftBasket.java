@@ -34,13 +34,11 @@ public class leftBasket extends LinearOpMode {
             robot.pauseMotors();
             robot.turnRight(0.5);
             sleep(100);
-            robot.slidesMovement(true,0.4);
             sleep(2000);
             robot.pauseMotors();
             robot.clawOpen(); // by this point, the block should be in the low basket
             robot.pauseMotors();
             sleep(600);
-            robot.slidesMovement(false,0.2);
             sleep(1000);
             /**robot.pauseMotors();
             robot.backward();

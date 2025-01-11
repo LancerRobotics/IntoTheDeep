@@ -200,13 +200,17 @@ public class LancersTeleOp extends LinearOpMode {
                 trackedExtensionRadians += (counterclockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
             }
 
+            if (gamepad2.y){
+                trackedExtensionRadians = 0;
+            }
+
             final boolean armTooLongToBeLegal = trackedExtensionRadians > LAWFUL_MINIMUM_EXTENSION_RADIANS;
             final boolean armTooLongMechanically = trackedExtensionRadians > MECHANICAL_ABSOLUTE_MINIMUM_EXTENSION_RADIANS;
 
             // over minimum: over max extension, pull in by setting a minimum value
             if (armTooLongToBeLegal || armTooLongMechanically) {
                 // abort rotation; pull in until we are within bounds
-                carbonFiberPower = -0.8;
+                carbonFiberPower = -0.3;
             }
 
             telemetry.addData("armTooLongToBeLegal", armTooLongToBeLegal);
@@ -219,7 +223,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             // as carbon fiber extends, clockwise +power and counterclockwise -power
             // as carbon fiber extends, clockwise -power and counterclockwise +power
-            clockwiseMotor.setPower(carbonFiberPower);
+            clockwiseMotor.setPower(-carbonFiberPower);
             counterclockwiseMotor.setPower(carbonFiberPower);
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum
@@ -235,9 +239,11 @@ public class LancersTeleOp extends LinearOpMode {
     public void setExtensionLimit(){
         double radians = trackedRotationRadians;
         double cosValue = Math.cos(radians);
-        double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
+        //double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
+        double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS);
 
         LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
+        LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.2;
     }
 
     public static final double DEAD_ZONE_LIMIT = 0.15d;

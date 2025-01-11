@@ -195,20 +195,7 @@ public class LancersRobot {
 
     // functions below are for the arm and the claw
 
-
-    public void slidesMovement(boolean isGoingUp, double power){
-        long start = System.nanoTime();
-        if (isGoingUp){
-            //while (System.nanoTime() - start < 5E9){ // 5 seconds
-            slidesMotor.setPower(-power); // Will need to adjust this over time
-            //}
-        }
-        else {
-            //while (System.nanoTime() - start < 45E8){ // 5 seconds
-            slidesMotor.setPower(power); // Will need to adjust this over time
-            //}
-        }
-    }
+    
     public void clawOpen(){
         hookServo.setPosition(LancersTeleOp.OPEN_SERVO_POSITION);
     }
