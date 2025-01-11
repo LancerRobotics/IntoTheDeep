@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.util.Encoder;
 
 @TeleOp()
 @Config
@@ -43,7 +42,7 @@ public class LancersTeleOp extends LinearOpMode {
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
 
-    private Encoder parallelEncoder, perpendicularEncoder;
+    //private Encoder parallelEncoder, perpendicularEncoder;
 
     @Override
     public void runOpMode() throws InterruptedException  {
@@ -80,8 +79,8 @@ public class LancersTeleOp extends LinearOpMode {
 
         //Declaring odometry pods/dead wheels/encoders/whatever you want to call it
         //Pulling from hardware map again
-        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
-        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
+        //parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
+        //perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
 
         // go!!
         waitForStart();
@@ -164,8 +163,8 @@ public class LancersTeleOp extends LinearOpMode {
             }
             final double relativeRotation = getArmDeviationFromBaselineDegrees();
 
-            parallelEncoder.setDirection(Encoder.Direction.REVERSE);
-            perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
+            //parallelEncoder.setDirection(Encoder.Direction.REVERSE);
+            //perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
 
             double degrees = (trackedRotationRadians * (180/Math.PI))%360;
 
@@ -225,8 +224,8 @@ public class LancersTeleOp extends LinearOpMode {
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;
 
-            telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
-            telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
+            //telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
+            //telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
 
             telemetry.update();
         }
@@ -237,7 +236,8 @@ public class LancersTeleOp extends LinearOpMode {
         double cosValue = Math.cos(radians);
         double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
 
-        LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
+        //LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
+        LAWFUL_MINIMUM_EXTENSION_RADIANS = 100;
     }
 
     public static final double DEAD_ZONE_LIMIT = 0.15d;

@@ -5,9 +5,7 @@ import com.pedropathing.localization.constants.*;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.LancersBotConfig;
-import org.firstinspires.ftc.teamcode.util.Encoder;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.util.Encoder.*;
 import com.qualcomm.hardware.rev.*;
 
 
