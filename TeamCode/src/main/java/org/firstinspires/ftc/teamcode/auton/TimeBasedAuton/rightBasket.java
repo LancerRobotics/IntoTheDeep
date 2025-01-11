@@ -26,20 +26,31 @@ public class rightBasket extends LinearOpMode {
         waitForStart();
 
         telemetry.addData("Status", "Its working :)");
+        telemetry.addData("trackedExtensionRadians", robot.trackedExtensionRadians);
         telemetry.update();
 
         if (opModeIsActive()){
+            robot.rotateArm(-0.5);
+            sleep(325);
+            robot.pauseMotors();
+            sleep(1000);
+            robot.extendUntilMax(); //no sleep function is needed
+            robot.pauseMotors();
+            telemetry.addData("trackedExtensionRadians", robot.trackedExtensionRadians);
+            telemetry.update();
+            robot.rotateArm(0.4);
+            sleep(1700);
+            robot.pauseMotors();
+            //movement here
 
-            robot.forward(0.6);
-            sleep(200);
-            robot.pauseMotors();
-            sleep(200);
-            robot.pauseMotors();
+            //claw open
             robot.clawOpen(); // by this point, the block should be in the low basket
             sleep(400);
             robot.pauseMotors();
-            sleep(300);
-            robot.pauseMotors();
+
+
+
+            //ALL GOOD
         }
     }
 }

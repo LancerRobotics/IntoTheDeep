@@ -7,15 +7,15 @@ import org.firstinspires.ftc.teamcode.LancersRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-@Autonomous(name="leftPark", group="TimeBasedAutons")
+@Autonomous(name="leftParkDelayed", group="TimeBasedAutons")
 @Config
-public class leftPark extends LinearOpMode {
+public class leftParkDelayed extends LinearOpMode {
     // purpose: If the robot is on the left side of the field, it will park the robot
     // BOT SHOULD BE FACED TOWARDS THE PARKING SPOT
 
     LancersRobot robot;
 
-    public leftPark(){
+    public leftParkDelayed(){
 
     }
 
@@ -29,6 +29,7 @@ public class leftPark extends LinearOpMode {
         telemetry.update();
 
         if (opModeIsActive()){
+            sleep(20000); // Waits 20 seconds
             robot.forward(0.5);
             sleep(2350);
             robot.pauseMotors();

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Autonomous(name="rightPark", group="TimeBasedAutons")
 @Config
 public class rightPark extends LinearOpMode {
-    // purpose: If the robot is on the right side of the field, it will park the robot
+    // purpose: If the robot is on the left side of the field, it will park the robot
     // BOT SHOULD BE FACED TOWARDS THE PARKING SPOT
 
     LancersRobot robot;
@@ -29,10 +29,13 @@ public class rightPark extends LinearOpMode {
         telemetry.update();
 
         if (opModeIsActive()){
-            robot.forward(0.5); //immediately goes to the corner to park
-            sleep(300);
+            robot.forward(0.5);
+            sleep(283);
             robot.pauseMotors();
 
+
+
+            //ALL GOOD
         }
     }
 }
