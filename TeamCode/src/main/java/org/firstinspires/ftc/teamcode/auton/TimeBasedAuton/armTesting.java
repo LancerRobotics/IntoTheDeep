@@ -38,7 +38,7 @@ public class armTesting extends LinearOpMode {
             robot.pauseMotors();
             telemetry.addData("trackedExtensionRadians", robot.trackedExtensionRadians);
             telemetry.update();
-            robot.rotateArm(0.4);
+            robot.rotateArm(1);
             sleep(1700);
             robot.pauseMotors();
             //movement here

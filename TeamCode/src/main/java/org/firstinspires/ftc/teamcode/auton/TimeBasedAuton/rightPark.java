@@ -30,7 +30,7 @@ public class rightPark extends LinearOpMode {
 
         if (opModeIsActive()){
             robot.forward(0.5);
-            sleep(283);
+            sleep(900);
             robot.pauseMotors();
 
 

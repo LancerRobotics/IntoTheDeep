@@ -37,8 +37,8 @@ public class LancersTeleOp extends LinearOpMode {
     public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.4;
     public static double CLAW_SERVO_SPEED = 0.4;
 
-    public static double OPEN_SERVO_POSITION = 0;
-    public static double CLOSE_SERVO_POSITION = 1; // Value at comp was 0.55, adjust later
+    public static double OPEN_SERVO_POSITION = 0.15;
+    public static double CLOSE_SERVO_POSITION = 0.75; // Value at comp was 0.55, adjust later
     
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
@@ -196,7 +196,7 @@ public class LancersTeleOp extends LinearOpMode {
             }
 
 
-            if ((timeStampAtLastOpModeRun != -1d) && ((respectDeadZones(gamepad2.left_stick_y) != 0) && (respectDeadZones(gamepad2.right_stick_y) == 0))) {
+            if (timeStampAtLastOpModeRun != -1d) {
                 trackedExtensionRadians += (counterclockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
             }
 
@@ -243,6 +243,7 @@ public class LancersTeleOp extends LinearOpMode {
         double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS);
 
         LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
+        //LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.2;
         LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.2;
     }
 
