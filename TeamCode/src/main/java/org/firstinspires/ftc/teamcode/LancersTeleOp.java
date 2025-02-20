@@ -219,7 +219,7 @@ public class LancersTeleOp extends LinearOpMode {
             // as carbon fiber extends, clockwise +power and counterclockwise -power
             // as carbon fiber extends, clockwise -power and counterclockwise +power
             clockwiseMotor.setPower(carbonFiberPower);
-            counterclockwiseMotor.setPower(carbonFiberPower);
+            counterclockwiseMotor.setPower(-carbonFiberPower);
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;
