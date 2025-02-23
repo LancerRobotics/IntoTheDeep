@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.util.Encoder;
 
 @TeleOp()
 @Config
@@ -37,13 +36,13 @@ public class LancersTeleOp extends LinearOpMode {
     public static double ROTATE_MAX_SPEED_MULTIPLIER = 0.4;
     public static double CLAW_SERVO_SPEED = 0.4;
 
-    public static double OPEN_SERVO_POSITION = 0.15;
-    public static double CLOSE_SERVO_POSITION = 0.75; // Value at comp was 0.55, adjust later
-    
+    public static double OPEN_SERVO_POSITION = 0;
+    public static double CLOSE_SERVO_POSITION = 1; // Value at comp was 0.55, adjust later
+
     private long currentRunTimeStamp = -1;
     private long timeStampAtLastOpModeRun = -1;
 
-    private Encoder parallelEncoder, perpendicularEncoder;
+    //private Encoder parallelEncoder, perpendicularEncoder;
 
     @Override
     public void runOpMode() throws InterruptedException  {
@@ -80,8 +79,8 @@ public class LancersTeleOp extends LinearOpMode {
 
         //Declaring odometry pods/dead wheels/encoders/whatever you want to call it
         //Pulling from hardware map again
-        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
-        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
+        //parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_RIGHT_MOTOR));
+        //perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, LancersBotConfig.FRONT_LEFT_MOTOR));
 
         // go!!
         waitForStart();
@@ -95,11 +94,11 @@ public class LancersTeleOp extends LinearOpMode {
             final double currentServoPosition = hookServo.getPosition();
             //Do not use the commented code below, they don't work
             //if (gamepad2.right_trigger > 0) {
-                // positive movement
-                //hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
+            // positive movement
+            //hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
             //} else if (gamepad2.left_trigger > 0) {
-                // negative movement
-                //hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d))}
+            // negative movement
+            //hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d))}
             if (gamepad2.left_bumper) {
                 // snap to open
                 hookServo.setPosition(OPEN_SERVO_POSITION);
@@ -164,8 +163,8 @@ public class LancersTeleOp extends LinearOpMode {
             }
             final double relativeRotation = getArmDeviationFromBaselineDegrees();
 
-            parallelEncoder.setDirection(Encoder.Direction.REVERSE);
-            perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
+            //parallelEncoder.setDirection(Encoder.Direction.REVERSE);
+            //perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);
 
             double degrees = (trackedRotationRadians * (180/Math.PI))%360;
 
@@ -196,12 +195,8 @@ public class LancersTeleOp extends LinearOpMode {
             }
 
 
-            if (timeStampAtLastOpModeRun != -1d) {
+            if ((timeStampAtLastOpModeRun != -1d) && ((respectDeadZones(gamepad2.left_stick_y) != 0) && (respectDeadZones(gamepad2.right_stick_y) == 0))) {
                 trackedExtensionRadians += (counterclockwiseEncoderReading) * (timeStampAtLastOpModeRun - currentRunTimeStamp)/1000;
-            }
-
-            if (gamepad2.y){
-                trackedExtensionRadians = 0;
             }
 
             final boolean armTooLongToBeLegal = trackedExtensionRadians > LAWFUL_MINIMUM_EXTENSION_RADIANS;
@@ -210,7 +205,7 @@ public class LancersTeleOp extends LinearOpMode {
             // over minimum: over max extension, pull in by setting a minimum value
             if (armTooLongToBeLegal || armTooLongMechanically) {
                 // abort rotation; pull in until we are within bounds
-                carbonFiberPower = -0.3;
+                carbonFiberPower = -0.8;
             }
 
             telemetry.addData("armTooLongToBeLegal", armTooLongToBeLegal);
@@ -223,14 +218,14 @@ public class LancersTeleOp extends LinearOpMode {
 
             // as carbon fiber extends, clockwise +power and counterclockwise -power
             // as carbon fiber extends, clockwise -power and counterclockwise +power
-            clockwiseMotor.setPower(-carbonFiberPower);
-            counterclockwiseMotor.setPower(carbonFiberPower);
+            clockwiseMotor.setPower(carbonFiberPower);
+            counterclockwiseMotor.setPower(-carbonFiberPower);
 
             // we finished an iteration, record the time the last value was recorded for use in finding sum
             timeStampAtLastOpModeRun = currentRunTimeStamp;
 
-            telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
-            telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
+            //telemetry.addData("X-value", parallelEncoder.getCurrentPosition());
+            //telemetry.addData("Y-value", perpendicularEncoder.getCurrentPosition());
 
             telemetry.update();
         }
@@ -239,12 +234,10 @@ public class LancersTeleOp extends LinearOpMode {
     public void setExtensionLimit(){
         double radians = trackedRotationRadians;
         double cosValue = Math.cos(radians);
-        //double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
-        double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS);
+        double armLimit = (LAWFUL_MINIMUM_HORIZONTAL_EXTENSION_RADIANS)/(cosValue);
 
-        LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
-        //LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.2;
-        LAWFUL_MINIMUM_EXTENSION_RADIANS = 1.2;
+        //LAWFUL_MINIMUM_EXTENSION_RADIANS = Math.abs(armLimit);
+        LAWFUL_MINIMUM_EXTENSION_RADIANS = 100;
     }
 
     public static final double DEAD_ZONE_LIMIT = 0.15d;
