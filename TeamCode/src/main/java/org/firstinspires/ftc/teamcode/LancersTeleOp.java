@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -74,8 +75,8 @@ public class LancersTeleOp extends LinearOpMode {
         final DcMotorEx counterRotationMotor = (DcMotorEx) hardwareMap.dcMotor.get(LancersBotConfig.COUNTER_ROTATION_MOTOR);
         counterRotationMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        final Servo hookServo = hardwareMap.servo.get(LancersBotConfig.HOOK_SERVO);
-        hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
+        final Servo hookServo = hardwareMap.get(Servo.class, LancersBotConfig.HOOK_SERVO);
+        //hookServo.scaleRange(OPEN_SERVO_POSITION, CLOSE_SERVO_POSITION); // also scales getPosition
 
         //Declaring odometry pods/dead wheels/encoders/whatever you want to call it
         //Pulling from hardware map again
@@ -97,8 +98,8 @@ public class LancersTeleOp extends LinearOpMode {
             // positive movement
             //hookServo.setPosition(Math.max(currentServoPosition + CLAW_SERVO_SPEED*(gamepad2.left_trigger/10), 1.0d));
             //} else if (gamepad2.left_trigger > 0) {
-            // negative movement
-            //hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED*(gamepad2.right_trigger/10), 0.0d))}
+                // negative movement
+                //hookServo.setPosition(Math.min(currentServoPosition - CLAW_SERVO_SPEED * (gamepad2.right_trigger / 10), 0.0d));}
             if (gamepad2.left_bumper) {
                 // snap to open
                 hookServo.setPosition(OPEN_SERVO_POSITION);
@@ -115,7 +116,7 @@ public class LancersTeleOp extends LinearOpMode {
 
             // Gamepad positions; Motors are swapped
             final double ly = -respectDeadZones(gamepad1.left_stick_y) * speedMultiplier; // Remember, Y stick value is reversed
-            final double lx = -respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
+            final double lx = respectDeadZones(gamepad1.left_stick_x) * speedMultiplier; // Counteract imperfect strafing
             final double rx = respectDeadZones(gamepad1.right_stick_x) * speedMultiplier;
 
             // Denominator is the largest motor power (absolute value) or 1
