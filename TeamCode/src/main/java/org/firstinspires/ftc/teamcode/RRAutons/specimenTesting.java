@@ -17,23 +17,36 @@ public class specimenTesting extends LinearOpMode {
         waitForStart(); // This is required in all autons!!!
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(0,0,Math.toRadians(90)))
-                        // Get first block (already oriented and positioned to do so)
+                drive.actionBuilder(new Pose2d(10, -70,Math.toRadians(180)))
+                        .strafeTo(new Vector2d(-10, -34))
+                        // hook
 
-                        .turnTo(Math.toRadians(90))
-                        .strafeTo(new Vector2d(48, -14))
-                        .strafeTo(new Vector2d(0,24))
-                        // hook block?
-
-                        .turnTo(Math.toRadians(90))
-                        .strafeTo(new Vector2d(0,-28))
+                        .turnTo(grabAngle)
+                        .strafeTo(getPos) // spline through it
                         // grab block
-                        .turnTo(Math.toRadians(-90))
-                        .strafeTo(new Vector2d(4,20))
-                        // hook blocks?
 
-                        .turnTo(Math.toRadians(90))
-                        .strafeTo(new Vector2d(0,-28))
+                        .strafeTo(new Vector2d(-5, -34))
+                        .turnTo(hookAngle)
+                        // hook
+
+                        .turnTo(grabAngle)
+                        .strafeTo(getPos)
+                        //grab block
+
+                        .strafeTo(new Vector2d(0, -34))
+                        .turnTo(hookAngle)
+                        // hook
+
+                        .turnTo(grabAngle)
+                        .strafeTo(getPos)
+                        // grab block
+
+                        .turnTo(hookAngle)
+                        .strafeTo(new Vector2d(5, -34))
+                        //hook
+
+                        // PARKING TIME!!!!!!!!!!!!!
+                        .strafeTo(new Vector2d(60,-56))
                         .build()
         );
 

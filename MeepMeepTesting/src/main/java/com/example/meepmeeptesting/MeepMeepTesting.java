@@ -8,6 +8,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
+
         MeepMeep meepMeep = new MeepMeep(800);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
@@ -15,21 +16,47 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(25, -61.5, Math.toRadians(90)))
-                .strafeTo(new Vector2d(33, -61.5))
-                .strafeTo(new Vector2d(33,0))
-                .strafeTo(new Vector2d(41, 0))
-                .strafeTo(new Vector2d(41, -55))
+        // initialHookPos is (0,-34);
+        Vector2d getPos = new Vector2d(54,-48.5);
+        double hookAngle = Math.toRadians(90), grabAngle = Math.toRadians(270);
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -61.75, hookAngle))
+                // Move to hook
+                .strafeTo(new Vector2d(-10, -34))
+                // hook
 
-                .strafeTo(new Vector2d(41,0))
-                .strafeTo(new Vector2d(53,0))
-                .strafeTo(new Vector2d(53,-55))
+                // Move to human player
+                .turnTo(grabAngle)
+                .strafeTo(getPos)
+                // grab block
 
-                .strafeTo(new Vector2d(53,0))
-                .strafeTo(new Vector2d(61,0))
-                .strafeTo(new Vector2d(61,-55))
+                // Move to hook
+                .strafeTo(new Vector2d(-5, -34))
+                .turnTo(hookAngle)
+                // hook
+
+                // Move to human player
+                .turnTo(grabAngle)
+                .strafeTo(getPos)
+                //grab block
+
+                // Move to hook
+                .strafeTo(new Vector2d(0, -34))
+                .turnTo(hookAngle)
+                // hook
+
+                // Move to human player
+                .turnTo(grabAngle)
+                .strafeTo(getPos)
+                // grab block
+
+                // Move to hook
+                .turnTo(hookAngle)
+                .strafeTo(new Vector2d(5, -34))
+                //hook
+
+                // PARKING TIME!!!!!!!!!!!!!
+                .strafeTo(new Vector2d(60,-56))
                 .build()
-
         );
 
         myBot.setDimensions(16.5,16.5);

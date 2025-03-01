@@ -17,13 +17,16 @@ public class pushRight extends LinearOpMode {
         waitForStart(); // This is required in all autons!!!
 
         Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(0,0,0))
-                        .strafeTo(new Vector2d(33, -61.5))
-                        .strafeTo(new Vector2d(33,0))
-                        .strafeTo(new Vector2d(41, 0))
-                        .strafeTo(new Vector2d(41, -55))
+                drive.actionBuilder(new Pose2d(25, -61.5, Math.toRadians(0)))
+                        .strafeTo(new Vector2d(25, -57))
+                        .strafeTo(new Vector2d(33, -57))
+                        .turnTo(Math.toRadians(90))
 
-                        .strafeTo(new Vector2d(41,0))
+                        .strafeTo(new Vector2d(33,0))
+                        .strafeTo(new Vector2d(45, 0))
+                        .strafeTo(new Vector2d(45, -55))
+
+                        .strafeTo(new Vector2d(45,0))
                         .strafeTo(new Vector2d(53,0))
                         .strafeTo(new Vector2d(53,-55))
 
