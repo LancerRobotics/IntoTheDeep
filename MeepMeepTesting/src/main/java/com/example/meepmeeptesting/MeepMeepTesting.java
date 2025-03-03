@@ -19,43 +19,24 @@ public class MeepMeepTesting {
         // initialHookPos is (0,-34);
         Vector2d getPos = new Vector2d(54,-48.5);
         double hookAngle = Math.toRadians(90), grabAngle = Math.toRadians(270);
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -61.75, hookAngle))
-                // Move to hook
-                .strafeTo(new Vector2d(-10, -34))
-                // hook
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-39.5, -61.5, Math.toRadians(180)))
+                .strafeTo(new Vector2d(-39.5, -55))
+                .strafeTo(new Vector2d(-59, -59))
+                .turnTo(Math.toRadians(225))
 
-                // Move to human player
-                .turnTo(grabAngle)
-                .strafeTo(getPos)
-                // grab block
+                .waitSeconds(1)
+                //.strafeTo(new Vector2d(-10, -34))
+                .waitSeconds(0.6)
+                .waitSeconds(1)
+                .waitSeconds(1.5)
 
-                // Move to hook
-                .strafeTo(new Vector2d(-5, -34))
-                .turnTo(hookAngle)
-                // hook
-
-                // Move to human player
-                .turnTo(grabAngle)
-                .strafeTo(getPos)
-                //grab block
-
-                // Move to hook
-                .strafeTo(new Vector2d(0, -34))
-                .turnTo(hookAngle)
-                // hook
-
-                // Move to human player
-                .turnTo(grabAngle)
-                .strafeTo(getPos)
-                // grab block
-
-                // Move to hook
-                .turnTo(hookAngle)
-                .strafeTo(new Vector2d(5, -34))
-                //hook
-
+                .waitSeconds(1)
+                .waitSeconds(0.5)
+                .waitSeconds(0.5)
                 // PARKING TIME!!!!!!!!!!!!!
-                .strafeTo(new Vector2d(60,-56))
+                .strafeTo(new Vector2d(-59,-56))
+                .turnTo(Math.toRadians(0))
+                .strafeTo(new Vector2d(55,-56))
                 .build()
         );
 
